@@ -1,5 +1,17 @@
 require 'digest/md5'
 
+  def deterministic_rand_custom(seed,max)
+    if defined?(Random) == 'constant' && Random.class == Class
+      Random.new(seed).rand(max).to_s
+    else
+      srand(seed)
+      result = rand(max).to_s
+      srand()
+      result
+    end
+  end
+
+
 Puppet::Parser::Functions::newfunction(:fqdn_rand_custom, :arity => -2, :type => :rvalue, :doc =>
   "Usage: `fqdn_rand_custom(MAX, [SEED])`. MAX is required and must be a positive
   integer; SEED is optional and may be any number or string.
@@ -17,5 +29,5 @@ Puppet::Parser::Functions::newfunction(:fqdn_rand_custom, :arity => -2, :type =>
   `fqdn_rand_custom(30, 'expensive job 2')` will produce totally different numbers.)") do |args|
     max = args.shift.to_i
     seed = Digest::MD5.hexdigest([self['::fqdn'],args].join(':')).hex
-    Puppet::Util.deterministic_rand_int(seed,max)
+    deterministic_rand_custom(seed,max)
 end
