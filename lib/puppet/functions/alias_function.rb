@@ -7,8 +7,12 @@ Puppet::Functions.create_function(:alias_function ) do |args|
   end
 
   def resolve(old_function, new_function)
-#    Puppet::Functions::newfunction(old_function.to_sym) do |args|
-#    end
-    0
+    require "pry"
+    biding.pry
+    Puppet::Functions::newfunction(old_function.to_sym) do |old_args|
+      def sample(*old_args)
+        call_function(new_function,old_args)
+      end
+    end
   end
 end
